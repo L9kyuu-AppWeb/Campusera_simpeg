@@ -1,11 +1,11 @@
 -- ==========================================
 -- Admin Panel Database Schema
--- Database: admin_panel_db
+-- Database: campusera_simpeg
 -- ==========================================
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS admin_panel_db;
-USE admin_panel_db;
+CREATE DATABASE IF NOT EXISTS campusera_simpeg;
+USE campusera_simpeg;
 
 -- ==========================================
 -- Table: roles
@@ -200,7 +200,7 @@ CREATE INDEX idx_activity_user_date ON activity_logs(user_id, created_at);
 
 -- Example for production:
 -- CREATE USER 'admin_panel_user'@'localhost' IDENTIFIED BY 'your_secure_password';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON admin_panel_db.* TO 'admin_panel_user'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON campusera_simpeg.* TO 'admin_panel_user'@'localhost';
 -- FLUSH PRIVILEGES;
 
 -- ==========================================
@@ -209,4 +209,4 @@ CREATE INDEX idx_activity_user_date ON activity_logs(user_id, created_at);
 
 SELECT 'Database created successfully!' as message;
 SELECT 'Default admin credentials:' as info, 'Username: admin, Password: admin123' as credentials;
-SELECT 'Total tables created:' as info, COUNT(*) as count FROM information_schema.tables WHERE table_schema = 'admin_panel_db';
+SELECT 'Total tables created:' as info, COUNT(*) as count FROM information_schema.tables WHERE table_schema = 'campusera_simpeg';
