@@ -1,0 +1,8 @@
+config.php
+
+# Ignore semua file di dalam assets/uploads
+assets/uploads/**/*
+
+# Track .gitkeep di root assets/uploads
+!assets/uploads/.gitkeep
+

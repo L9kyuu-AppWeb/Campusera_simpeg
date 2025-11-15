@@ -7,7 +7,7 @@ require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
 $page = isset($_GET['page']) ? cleanInput($_GET['page']) : 'dashboard';
-$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'login', 'logout'];
+$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'login', 'logout'];
 $publicPages   = ['login','404']; // Halaman yang tidak butuh login
 
 // Validasi halaman
@@ -51,6 +51,30 @@ switch ($page) {
         break;
     case 'roles':
         require_once 'pages/roles/index.php';
+        break;
+    case 'pegawai':
+        require_once 'pages/pegawai/index.php';
+        break;
+    case 'dosen':
+        require_once 'pages/dosen/index.php';
+        break;
+    case 'dosen_prodi':
+        require_once 'pages/dosen_prodi/index.php';
+        break;
+    case 'fakultas':
+        require_once 'pages/fakultas/index.php';
+        break;
+    case 'prodi':
+        require_once 'pages/prodi/index.php';
+        break;
+    case 'tendik':
+        require_once 'pages/tendik/index.php';
+        break;
+    case 'unit_kerja':
+        require_once 'pages/unit_kerja/index.php';
+        break;
+    case 'riwayat_kepegawaian':
+        require_once 'pages/riwayat_kepegawaian/index.php';
         break;
     default:
         echo '<h1>404 - Page Not Found</h1>';

@@ -153,3 +153,63 @@ function getImageUrl($imageName, $imageType = 'general') {
     return BASE_URL . 'assets/uploads/' . $imageType . '/' . $imageName;
 }
 
+// Upload document
+function uploadDocument($file, $itemId = 0, $docType = 'general') {
+    if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
+        return false;
+    }
+
+    // Check if uploads directory exists, create if not
+    $uploadDir = UPLOAD_PATH . $docType . '/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    // Allowed file extensions
+    $allowedExtensions = ['pdf', 'doc', 'docx'];
+    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    // Check file type
+    if (!in_array($fileExtension, $allowedExtensions)) {
+        return false;
+    }
+
+    // Check file size (limit to 5MB)
+    if ($file['size'] > 5 * 1024 * 1024) {
+        return false;
+    }
+
+    // Generate unique filename
+    // If item ID is 0 (temporary), use timestamp instead
+    if ($itemId == 0) {
+        $fileName = 'tmp_' . time() . '_' . uniqid() . '.' . $fileExtension;
+    } else {
+        $fileName = $itemId . '_' . time() . '.' . $fileExtension;
+    }
+    $targetPath = $uploadDir . $fileName;
+
+    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return $fileName;
+    }
+
+    return false;
+}
+
+// Delete document
+function deleteDocument($docName, $docType = 'general') {
+    if (!empty($docName)) {
+        $docPath = UPLOAD_PATH . $docType . '/' . $docName;
+        if (file_exists($docPath)) {
+            unlink($docPath);
+        }
+    }
+}
+
+// Get document URL
+function getDocumentUrl($docName, $docType = 'general') {
+    if (empty($docName)) {
+        return BASE_URL . 'assets/docs/no-document.pdf'; // Default document if none exists
+    }
+    return BASE_URL . 'assets/uploads/' . $docType . '/' . $docName;
+}
+

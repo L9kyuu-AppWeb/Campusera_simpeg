@@ -43,6 +43,86 @@
                 </a>
                 <?php endif; ?>
 
+                <!-- Pegawai (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=pegawai" class="sidebar-item <?php echo $currentPage === 'pegawai' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'pegawai' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Pegawai</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Dosen (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=dosen" class="sidebar-item <?php echo $currentPage === 'dosen' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'dosen' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Dosen</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Dosen Prodi (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=dosen_prodi" class="sidebar-item <?php echo $currentPage === 'dosen_prodi' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'dosen_prodi' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Dosen Prodi</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Fakultas (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=fakultas" class="sidebar-item <?php echo $currentPage === 'fakultas' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'fakultas' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Fakultas</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Prodi (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=prodi" class="sidebar-item <?php echo $currentPage === 'prodi' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'prodi' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Prodi</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Tendik (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=tendik" class="sidebar-item <?php echo $currentPage === 'tendik' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'tendik' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Tendik</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Unit Kerja (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=unit_kerja" class="sidebar-item <?php echo $currentPage === 'unit_kerja' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'unit_kerja' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Unit Kerja</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Riwayat Kepegawaian (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=riwayat_kepegawaian" class="sidebar-item <?php echo $currentPage === 'riwayat_kepegawaian' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'riwayat_kepegawaian' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Riwayat Kepegawaian</span>
+                </a>
+                <?php endif; ?>
+
                 <!-- Profile -->
                 <a href="index.php?page=profile" class="sidebar-item <?php echo $currentPage === 'profile' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
                     <svg class="w-5 h-5 <?php echo $currentPage === 'profile' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
