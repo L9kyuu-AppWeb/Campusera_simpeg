@@ -21,8 +21,7 @@ CREATE TABLE IF NOT EXISTS roles (
 INSERT INTO roles (role_name, description) VALUES
 ('admin', 'Full system access with all permissions'),
 ('dosen', 'Management level access with limited permissions'),
-('tendik', 'Basic staff access for daily operations'),
-('user', 'Regular user access with minimal permissions');
+('tendik', 'Basic staff access for daily operations');
 
 -- ==========================================
 -- Table: users
