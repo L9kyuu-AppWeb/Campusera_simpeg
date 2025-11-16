@@ -77,6 +77,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
 
                 if ($stmt->execute([$nomor_induk, $nik, $nama_lengkap, $email, $no_hp, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $alamat, $imageFileName, $status_aktif, $tipe_pegawai, $pegawaiId])) {
+                    // Update user role if employee type has changed
+                    if ($pegawai['tipe_pegawai'] !== $tipe_pegawai) {
+                        $username = !empty($nik) ? $nik : $nomor_induk;
+                        if (!empty($username)) {
+                            // Determine new role based on employee type
+                            if (stripos($tipe_pegawai, 'dosen') !== false) {
+                                $roleId = 2; // 'dosen' role
+                            } else {
+                                $roleId = 3; // 'tendik' role
+                            }
+
+                            // Update user role
+                            $userStmt = $pdo->prepare("UPDATE users SET role_id = ? WHERE username = ?");
+                            $userStmt->execute([$roleId, $username]);
+                        }
+                    }
+
                     logActivity($_SESSION['user_id'], 'update_pegawai', "Updated pegawai: $nama_lengkap");
                     setAlert('success', 'Pegawai berhasil diperbarui!');
                     redirect('index.php?page=pegawai');

@@ -17,6 +17,9 @@ switch ($action) {
     case 'delete':
         require_once 'delete.php';
         break;
+    case 'reset_password':
+        require_once 'reset_password.php';
+        break;
     default:
         // List pegawai
         $search = isset($_GET['search']) ? cleanInput($_GET['search']) : '';
@@ -195,6 +198,14 @@ switch ($action) {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                             </a>
+                            <form method="POST" action="index.php?page=pegawai&action=reset_password" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin mereset password pegawai ini ke default?');">
+                                <input type="hidden" name="pegawai_id" value="<?php echo $p['id']; ?>">
+                                <button type="submit" class="text-yellow-600 hover:text-yellow-800 transition-colors" title="Reset Password">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

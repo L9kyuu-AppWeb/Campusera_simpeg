@@ -77,6 +77,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
+                    // Create user account for the new employee
+                    $username = !empty($nik) ? $nik : $nomor_induk; // Use NIK if available, otherwise nomor_induk
+                    if (!empty($username)) {
+                        $defaultPassword = password_hash('1234567', PASSWORD_DEFAULT);
+                        $firstName = explode(' ', $nama_lengkap)[0]; // Get first word as first name
+                        $lastName = implode(' ', array_slice(explode(' ', $nama_lengkap), 1)); // Remaining words as last name
+
+                        // Determine role based on employee type (case-insensitive search)
+                        if (stripos($tipe_pegawai, 'dosen') !== false) {
+                            // For dosen types, use 'dosen' role
+                            $roleId = 2;
+                        } else {
+                            // For tendik types, use 'tendik' role
+                            $roleId = 3;
+                        }
+
+                        // Check if username already exists to avoid conflict
+                        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+                        $stmt->execute([$username]);
+                        if (!$stmt->fetch()) {
+                            $stmt = $pdo->prepare("
+                                INSERT INTO users (username, email, password, first_name, last_name, phone, role_id, is_active)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+                            ");
+                            $stmt->execute([
+                                $username,
+                                $email,
+                                $defaultPassword,
+                                $firstName,
+                                $lastName,
+                                $no_hp,
+                                $roleId
+                            ]);
+                        }
+                    }
+
                     logActivity($_SESSION['user_id'], 'create_pegawai', "Created new pegawai: $nama_lengkap");
                     setAlert('success', 'Pegawai berhasil ditambahkan!');
                     redirect('index.php?page=pegawai');
