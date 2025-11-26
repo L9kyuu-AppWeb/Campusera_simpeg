@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Dokumen SK</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Dokumen Pendukung</label>
             <input type="text" value="<?php echo htmlspecialchars($riwayat['nomor_sk'] ?? '-'); ?>" readonly
                    class="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-100">
         </div>

@@ -217,7 +217,15 @@ $jenis = $pdo->query("SELECT DISTINCT jenis_perubahan FROM riwayat_kepegawaian W
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Perubahan *</label>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Jenis Perubahan *</label>
+                    <button type="button" onclick="openJenisPerubahanModal()" class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Bantuan
+                    </button>
+                </div>
                 <select name="jenis_perubahan" required
                         class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
                     <option value="">Pilih Jenis</option>
@@ -228,10 +236,12 @@ $jenis = $pdo->query("SELECT DISTINCT jenis_perubahan FROM riwayat_kepegawaian W
                         </option>
                     <?php endforeach; ?>
                     <!-- Default options -->
-                    <option value="pengangkatan" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'pengangkatan' ? 'selected' : ''; ?>>Pengangkatan</option>
-                    <option value="promosi" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'promosi' ? 'selected' : ''; ?>>Promosi</option>
-                    <option value="mutasi" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'mutasi' ? 'selected' : ''; ?>>Mutasi</option>
-                    <option value="pensiun" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'pensiun' ? 'selected' : ''; ?>>Pensiun</option>
+                    <option value="jabatan_struktural_fungsional" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'jabatan_struktural_fungsional' ? 'selected' : ''; ?>>Jabatan Struktural / Fungsional</option>
+                    <option value="tugas_tambahan_akademik" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'tugas_tambahan_akademik' ? 'selected' : ''; ?>>Tugas Tambahan Akademik</option>
+                    <option value="kepanitiaan_resmi" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'kepanitiaan_resmi' ? 'selected' : ''; ?>>Kepanitiaan Resmi</option>
+                    <option value="penugasan_khusus" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'penugasan_khusus' ? 'selected' : ''; ?>>Penugasan Khusus</option>
+                    <option value="pelatihan_sertifikasi_pengembangan_kompetensi" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'pelatihan_sertifikasi_pengembangan_kompetensi' ? 'selected' : ''; ?>>Pelatihan, Sertifikasi, dan Pengembangan Kompetensi</option>
+                    <option value="penghargaan_reward_pegawai" <?php echo (isset($_POST['jenis_perubahan']) ? $_POST['jenis_perubahan'] : $riwayat['jenis_perubahan']) === 'penghargaan_reward_pegawai' ? 'selected' : ''; ?>>Penghargaan / Reward Pegawai</option>
                 </select>
             </div>
 
@@ -243,35 +253,35 @@ $jenis = $pdo->query("SELECT DISTINCT jenis_perubahan FROM riwayat_kepegawaian W
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nomor SK</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Dokumen</label>
                 <input type="text" name="nomor_sk"
                        value="<?php echo isset($_POST['nomor_sk']) ? htmlspecialchars($_POST['nomor_sk']) : (isset($dokumenInfo) && isset($dokumenInfo['nomor_sk']) ? htmlspecialchars($dokumenInfo['nomor_sk']) : ''); ?>"
                        class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Judul SK</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Judul Dokumen</label>
                 <input type="text" name="judul_sk"
                        value="<?php echo isset($_POST['judul_sk']) ? htmlspecialchars($_POST['judul_sk']) : (isset($dokumenInfo) && isset($dokumenInfo['judul']) ? htmlspecialchars($dokumenInfo['judul']) : ''); ?>"
                        class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal SK</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Dokumen</label>
                 <input type="date" name="tanggal_sk"
                        value="<?php echo isset($_POST['tanggal_sk']) ? htmlspecialchars($_POST['tanggal_sk']) : (isset($dokumenInfo) && isset($dokumenInfo['tanggal_sk']) ? htmlspecialchars($dokumenInfo['tanggal_sk']) : ''); ?>"
                        class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Dokumen SK</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dokumen Pendukung</label>
                 <?php if ($dokumenInfo && !empty($dokumenInfo['dokumen_sk'])): ?>
                 <div class="mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Dokumen SK saat ini:</p>
+                    <p class="text-sm text-gray-600 mb-2">Dokumen pendukung saat ini:</p>
                     <a href="<?php echo getDocumentUrl($dokumenInfo['dokumen_sk'], 'dokumen_sk'); ?>"
                        target="_blank"
                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                       <?php echo htmlspecialchars(($dokumenInfo['nomor_sk'] ?? '') ?: 'Lihat Dokumen SK'); ?>
+                       <?php echo htmlspecialchars(($dokumenInfo['nomor_sk'] ?? '') ?: 'Lihat Dokumen Pendukung'); ?>
                     </a>
                 </div>
                 <?php endif; ?>
@@ -430,5 +440,139 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Modal functionality
+function openJenisPerubahanModal() {
+    const modal = document.getElementById('jenisPerubahanModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeJenisPerubahanModal() {
+    const modal = document.getElementById('jenisPerubahanModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('jenisPerubahanModal');
+    if (event.target === modal) {
+        closeJenisPerubahanModal();
+    }
+}
 </script>
+
+<!-- Modal for Jenis Perubahan Explanation -->
+<div id="jenisPerubahanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Kategori Riwayat Kepegawaian yang Relevan di Universitas</h3>
+                <button type="button" onclick="closeJenisPerubahanModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="prose max-w-none">
+                <p class="text-gray-600 mb-4">Riwayat kepegawaian tidak hanya soal kenaikan pangkat dan mutasi, tetapi segala bentuk perubahan status, tugas, atau peran resmi pegawai. Berikut daftar rekomendasinya:</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">1. Jabatan Struktural / Fungsional</h4>
+                        <p class="text-gray-600 mb-2">Ini adalah perubahan yang pasti layak masuk riwayat kepegawaian.</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Kepala Program Studi (Kaprodi)</li>
+                            <li>Sekretaris Prodi</li>
+                            <li>Ketua Jurusan</li>
+                            <li>Sekretaris Jurusan</li>
+                            <li>Wakil Dekan</li>
+                            <li>Kepala Unit (UPT TI, UPT Bahasa, LPPM, LP3M)</li>
+                            <li>Koordinator Lab / Studio</li>
+                            <li>Dosen dengan jabatan fungsional (Asisten Ahli, Lektor, Lektor Kepala, Guru Besar)</li>
+                            <li>Mutasi unit kerja</li>
+                            <li>Tugas tambahan sebagai pejabat tertentu</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">2. Tugas Tambahan Akademik</h4>
+                        <p class="text-gray-600 mb-2">Biasanya menjadi bagian dari SK Rektor/Dekan.</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Penanggung jawab mata kuliah tertentu</li>
+                            <li>Penasehat akademik / DPA</li>
+                            <li>Penanggung jawab kurikulum</li>
+                            <li>Pembina UKM / Organisasi Mahasiswa</li>
+                            <li>Dosen penguji skripsi/tesis/disertasi</li>
+                            <li>Dosen pembimbing KKN / Magang / Kampus Merdeka</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">3. Kepanitiaan Resmi</h4>
+                        <p class="text-gray-600 mb-2">➡️ Pertanyaan inti Anda: apakah kepanitiaan bisa dimasukkan?</p>
+                        <p class="text-gray-600 mb-2">Jawabannya: YA, jika kepanitiaan tersebut dibuat dengan SK resmi (Rektor/Dekan/Ketua Unit).<br>Ini termasuk:</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Panitia Wisuda</li>
+                            <li>Panitia Seminar Nasional/Internasional</li>
+                            <li>Panitia Penerimaan Mahasiswa Baru (PMB)</li>
+                            <li>Panitia Audit Mutu Internal (AMI)</li>
+                            <li>Panitia Akreditasi Program Studi / Institusi</li>
+                            <li>Panitia Event Universitas (Dies Natalis, Expo, Festival Seni)</li>
+                            <li>Panitia Kegiatan MBKM (Magang, Studi Independen, KKN Terpadu)</li>
+                        </ul>
+                        <p class="text-gray-600 mt-2">Kuncinya: ada SK → maka boleh masuk riwayat kepegawaian.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">4. Penugasan Khusus</h4>
+                        <p class="text-gray-600 mb-2">Biasanya ada SK Rektor/Dekan.</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Tugas belajar (S2/S3)</li>
+                            <li>Tugas penelitian hibah</li>
+                            <li>Penugasan ke luar negeri</li>
+                            <li>Penugasan mengajar di prodi/fakultas lain</li>
+                            <li>Penugasan menjadi reviewer jurnal / asesor BAN-PT/LAM</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">5. Pelatihan, Sertifikasi, dan Pengembangan Kompetensi</h4>
+                        <p class="text-gray-600 mb-2">Jika berhubungan dengan kepegawaian.</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Pelatihan Pekerti/AA (Pendidik Profesional)</li>
+                            <li>Sertifikasi dosen (Serdos)</li>
+                            <li>Workshop Kurikulum</li>
+                            <li>Pelatihan Kepemimpinan (PKA, PKM, PKA Tingkat IV)</li>
+                            <li>Pelatihan IT, keuangan, administrasi kampus</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-2">6. Penghargaan / Reward Pegawai</h4>
+                        <p class="text-gray-600 mb-2">Jika diterbitkan oleh universitas:</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 ml-4">
+                            <li>Dosen Berprestasi</li>
+                            <li>Tendik Berprestasi</li>
+                            <li>Penghargaan Penelitian / Publikasi Terbaik</li>
+                            <li>Satya Lencana 10/20/30 tahun</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button type="button" onclick="closeJenisPerubahanModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-xl transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>

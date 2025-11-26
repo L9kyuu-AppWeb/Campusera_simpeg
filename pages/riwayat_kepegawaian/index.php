@@ -132,11 +132,11 @@ switch ($action) {
                         </div>
                         <?php if ($r['dokumen_nama']): ?>
                         <div>
-                            <p class="text-xs text-gray-500">Dokumen SK</p>
+                            <p class="text-xs text-gray-500">Dokumen Pendukung</p>
                             <a href="<?php echo getDocumentUrl($r['dokumen_nama'], 'dokumen_sk'); ?>"
                                target="_blank"
                                class="text-blue-600 hover:text-blue-800 text-sm font-medium break-words">
-                                <?php echo htmlspecialchars($r['nomor_sk'] ?: 'Lihat Dokumen'); ?>
+                                <?php echo htmlspecialchars($r['nomor_sk'] ?: 'Lihat Dokumen Pendukung'); ?>
                             </a>
                         </div>
                         <?php endif; ?>

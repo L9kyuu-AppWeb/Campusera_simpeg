@@ -53,7 +53,7 @@ $num1 = rand(1, 5);
 $num2 = rand(1, 5);
 $operation = rand(0, 1); // 0 for addition, 1 for subtraction
 $operation_symbol = $operation === 0 ? '+' : '+';
-$answer = $operation === 0 ? $num1 + $num2 : $num1 - $num2;
+$answer = $operation === 0 ? $num1 + $num2 : $num1 + $num2;
 
 // Store correct answer in session
 $_SESSION['captcha'] = $answer;
