@@ -50,7 +50,7 @@
                 </a>
                 <?php endif; ?>
 
-            <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Data</h3>
+            <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Data Pegawai</h3>
 
                 <!-- Games (Admin & Manager only) -->
                 <?php if (hasRole(['admin', 'manager'])): ?>
@@ -73,6 +73,17 @@
                 </a>
                 <?php endif; ?>
 
+                <!-- Riwayat Kepegawaian (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=riwayat_kepegawaian" class="sidebar-item <?php echo $currentPage === 'riwayat_kepegawaian' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'riwayat_kepegawaian' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Riwayat Kepegawaian</span>
+                </a>
+                <?php endif; ?>
+
+            <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Tenaga Pengajar</h3>
                 <!-- Dosen (Admin only) -->
                 <?php if (hasRole(['admin'])): ?>
                 <a href="index.php?page=dosen" class="sidebar-item <?php echo $currentPage === 'dosen' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
@@ -92,7 +103,8 @@
                     <span class="font-medium text-gray-700">Tim Pengajar</span>
                 </a>
                 <?php endif; ?>                
-
+            
+            <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Tenega Kependidikan</h3>
                 <!-- Tendik (Admin only) -->
                 <?php if (hasRole(['admin'])): ?>
                 <a href="index.php?page=tendik" class="sidebar-item <?php echo $currentPage === 'tendik' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
@@ -111,17 +123,7 @@
                     </svg>
                     <span class="font-medium text-gray-700">Unit Kerja</span>
                 </a>
-                <?php endif; ?>
-
-                <!-- Riwayat Kepegawaian (Admin only) -->
-                <?php if (hasRole(['admin'])): ?>
-                <a href="index.php?page=riwayat_kepegawaian" class="sidebar-item <?php echo $currentPage === 'riwayat_kepegawaian' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
-                    <svg class="w-5 h-5 <?php echo $currentPage === 'riwayat_kepegawaian' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                    </svg>
-                    <span class="font-medium text-gray-700">Riwayat Kepegawaian</span>
-                </a>
-                <?php endif; ?>
+                <?php endif; ?>                
             
             <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Sistem</h3>
                 <!-- Profile -->
