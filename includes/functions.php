@@ -165,8 +165,8 @@ function uploadDocument($file, $itemId = 0, $docType = 'general') {
         mkdir($uploadDir, 0755, true);
     }
 
-    // Allowed file extensions
-    $allowedExtensions = ['pdf', 'doc', 'docx'];
+    // Allowed file extensions - including PDF, DOC, DOCX, and image formats
+    $allowedExtensions = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];
     $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
     // Check file type
@@ -211,5 +211,30 @@ function getDocumentUrl($docName, $docType = 'general') {
         return BASE_URL . 'assets/docs/no-document.pdf'; // Default document if none exists
     }
     return BASE_URL . 'assets/uploads/' . $docType . '/' . $docName;
+}
+
+// Get education file URL
+function getEducationFileUrl($filePath) {
+    if (empty($filePath)) {
+        return BASE_URL . 'assets/docs/no-document.pdf'; // Default document if none exists
+    }
+    return BASE_URL . $filePath;
+}
+
+// Format file size
+function formatFileSize($bytes) {
+    if ($bytes >= 1073741824) {
+        return number_format($bytes / 1073741824, 2) . ' GB';
+    } elseif ($bytes >= 1048576) {
+        return number_format($bytes / 1048576, 2) . ' MB';
+    } elseif ($bytes >= 1024) {
+        return number_format($bytes / 1024, 2) . ' KB';
+    } elseif ($bytes > 1) {
+        return $bytes . ' bytes';
+    } elseif ($bytes == 1) {
+        return $bytes . ' byte';
+    } else {
+        return '0 bytes';
+    }
 }
 

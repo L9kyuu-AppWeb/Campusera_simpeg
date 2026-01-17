@@ -117,7 +117,7 @@ require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
 $page = isset($_GET['page']) ? cleanInput($_GET['page']) : 'dashboard';
-$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'login', 'logout'];
+$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'pegawai_keluarga', 'pegawai_pendidikan', 'pegawai_pendidikan_berkas', 'login', 'logout'];
 $publicPages   = ['login','404']; // Halaman yang tidak butuh login
 
 // Validasi halaman
@@ -185,6 +185,15 @@ switch ($page) {
         break;
     case 'riwayat_kepegawaian':
         require_once 'pages/riwayat_kepegawaian/index.php';
+        break;
+    case 'pegawai_keluarga':
+        require_once 'pages/pegawai_keluarga/index.php';
+        break;
+    case 'pegawai_pendidikan':
+        require_once 'pages/pegawai_pendidikan/index.php';
+        break;
+    case 'pegawai_pendidikan_berkas':
+        require_once 'pages/pegawai_pendidikan_berkas/index.php';
         break;
     default:
         echo '<h1>404 - Page Not Found</h1>';
