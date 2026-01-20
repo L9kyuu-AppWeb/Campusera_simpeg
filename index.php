@@ -117,7 +117,7 @@ require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
 $page = isset($_GET['page']) ? cleanInput($_GET['page']) : 'dashboard';
-$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'pegawai_keluarga', 'pegawai_pendidikan', 'pegawai_pendidikan_berkas', 'login', 'logout'];
+$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'pegawai_keluarga', 'pegawai_pendidikan', 'pegawai_pendidikan_berkas', 'jenis_izin', 'izin_pegawai', 'master_cuti', 'saldo_cuti', 'login', 'logout'];
 $publicPages   = ['login','404']; // Halaman yang tidak butuh login
 
 // Validasi halaman
@@ -195,6 +195,18 @@ switch ($page) {
     case 'pegawai_pendidikan_berkas':
         require_once 'pages/pegawai_pendidikan_berkas/index.php';
         break;
+    case 'jenis_izin':
+        require_once 'pages/jenis_izin/index.php';
+        break;
+    case 'izin_pegawai':
+        require_once 'pages/izin_pegawai/index.php';
+        break;
+    case 'master_cuti':
+        require_once 'pages/master_cuti/index.php';
+        break;
+    case 'saldo_cuti':
+        require_once 'pages/saldo_cuti/index.php';
+        break;
     default:
         echo '<h1>404 - Page Not Found</h1>';
 }
@@ -205,10 +217,12 @@ $pageContent = ob_get_clean(); // Simpan content
 if (!in_array($page, $publicPages)) {
     require_once 'includes/header.php';
     require_once 'includes/sidebar.php';
-    echo '<main class="lg:ml-64 pt-16 min-h-screen flex flex-col"><div class="p-6 flex-1">';
+    echo '<main class="lg:ml-64 pt-16 min-h-screen flex flex-col">';
+    echo '<div class="flex-1"><div class="p-6">';
     echo $pageContent; // Output content yang sudah di-buffer
-    echo '</div>';
+    echo '</div></div>';
     require_once 'includes/footer.php';
+    echo '</main>';
 } else {
     // Untuk public pages (login), langsung output
     echo $pageContent;

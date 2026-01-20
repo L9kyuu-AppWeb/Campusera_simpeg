@@ -50,6 +50,26 @@
                 </a>
                 <?php endif; ?>
 
+                <!-- Jenis Izin (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=jenis_izin" class="sidebar-item <?php echo $currentPage === 'jenis_izin' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'jenis_izin' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Jenis Izin</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Saldo Cuti (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=saldo_cuti" class="sidebar-item <?php echo $currentPage === 'saldo_cuti' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'saldo_cuti' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Saldo Cuti</span>
+                </a>
+                <?php endif; ?>
+
             <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Data Pegawai</h3>
 
                 <!-- Games (Admin & Manager only) -->
@@ -60,6 +80,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span class="font-medium text-gray-700">Games</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Izin Pegawai (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=izin_pegawai" class="sidebar-item <?php echo $currentPage === 'izin_pegawai' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'izin_pegawai' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Izin Pegawai</span>
                 </a>
                 <?php endif; ?>
 
@@ -172,6 +202,16 @@
                     </svg>
                     <span class="font-medium text-gray-700">Settings</span>
                 </a>
+
+                <!-- Master Cuti (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=master_cuti" class="sidebar-item <?php echo $currentPage === 'master_cuti' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'master_cuti' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Master Cuti</span>
+                </a>
+                <?php endif; ?>
             </div>
         </div>
 
