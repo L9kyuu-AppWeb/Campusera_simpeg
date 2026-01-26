@@ -117,7 +117,7 @@ require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
 $page = isset($_GET['page']) ? cleanInput($_GET['page']) : 'dashboard';
-$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'pegawai', 'dosen', 'dosen_prodi', 'fakultas', 'prodi', 'tendik', 'unit_kerja', 'riwayat_kepegawaian', 'pegawai_keluarga', 'pegawai_pendidikan', 'pegawai_pendidikan_berkas', 'jenis_izin', 'izin_pegawai', 'master_cuti', 'saldo_cuti', 'login', 'logout'];
+$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'adminRole_roles', 'adminRole_pegawai', 'adminRole_dosen', 'adminRole_tim_mengajar', 'fakultas', 'adminRole_fakultas', 'adminRole_prodi', 'adminRole_tendik', 'adminRole_unit_kerja', 'adminRole_pegawai_riwayat', 'adminRole_pegawai_keluarga', 'adminRole_pegawai_pendidikan', 'adminRole_pegawai_pendidikan_berkas', 'adminRole_jenis_izin', 'adminRole_izin_pegawai', 'adminRole_master_cuti', 'adminRole_saldo_cuti', 'dosenRole_pegawai', 'dosenRole_mengajar', 'login', 'logout'];
 $publicPages   = ['login','404']; // Halaman yang tidak butuh login
 
 // Validasi halaman
@@ -160,52 +160,60 @@ switch ($page) {
         require_once 'pages/games/index.php';
         break;
     case 'roles':
-        require_once 'pages/roles/index.php';
+    case 'adminRole_roles':
+        require_once 'pages/adminRole_roles/index.php';
         break;
-    case 'pegawai':
-        require_once 'pages/pegawai/index.php';
+    case 'adminRole_pegawai':
+        require_once 'pages/adminRole_pegawai/index.php';
         break;
-    case 'dosen':
-        require_once 'pages/dosen/index.php';
+    case 'adminRole_dosen':
+        require_once 'pages/adminRole_dosen/index.php';
         break;
-    case 'dosen_prodi':
-        require_once 'pages/dosen_prodi/index.php';
+    case 'dosenRole_pegawai':
+        require_once 'pages/dosenRole_pegawai/index.php';
+        break;
+    case 'dosenRole_mengajar':
+        require_once 'pages/dosenRole_mengajar/index.php';
+        break;
+    case 'adminRole_tim_mengajar':
+        require_once 'pages/adminRole_tim_mengajar/index.php';
         break;
     case 'fakultas':
-        require_once 'pages/fakultas/index.php';
+    case 'adminRole_fakultas':
+        require_once 'pages/adminRole_fakultas/index.php';
         break;
-    case 'prodi':
-        require_once 'pages/prodi/index.php';
+    case 'adminRole_prodi':
+        require_once 'pages/adminRole_prodi/index.php';
         break;
-    case 'tendik':
-        require_once 'pages/tendik/index.php';
+    case 'adminRole_tendik':
+        require_once 'pages/adminRole_tendik/index.php';
         break;
-    case 'unit_kerja':
-        require_once 'pages/unit_kerja/index.php';
+    case 'adminRole_unit_kerja':
+        require_once 'pages/adminRole_unit_kerja/index.php';
         break;
-    case 'riwayat_kepegawaian':
-        require_once 'pages/riwayat_kepegawaian/index.php';
+    case 'adminRole_pegawai_riwayat':
+        require_once 'pages/adminRole_pegawai_riwayat/index.php';
         break;
-    case 'pegawai_keluarga':
-        require_once 'pages/pegawai_keluarga/index.php';
+    case 'adminRole_pegawai_pendidikan':
+        require_once 'pages/adminRole_pegawai_pendidikan/index.php';
         break;
-    case 'pegawai_pendidikan':
-        require_once 'pages/pegawai_pendidikan/index.php';
+    case 'adminRole_pegawai_keluarga':
+        require_once 'pages/adminRole_pegawai_keluarga/index.php';
         break;
-    case 'pegawai_pendidikan_berkas':
-        require_once 'pages/pegawai_pendidikan_berkas/index.php';
+    case 'adminRole_pegawai_pendidikan_berkas':
+        require_once 'pages/adminRole_pegawai_pendidikan_berkas/index.php';
         break;
-    case 'jenis_izin':
-        require_once 'pages/jenis_izin/index.php';
+    case 'adminRole_jenis_izin':
+        require_once 'pages/adminRole_jenis_izin/index.php';
         break;
-    case 'izin_pegawai':
-        require_once 'pages/izin_pegawai/index.php';
+    case 'adminRole_izin_pegawai':
+        require_once 'pages/adminRole_izin_pegawai/index.php';
         break;
-    case 'master_cuti':
-        require_once 'pages/master_cuti/index.php';
+    case 'adminRole_master_cuti':
+        require_once 'pages/adminRole_master_cuti/index.php';
         break;
-    case 'saldo_cuti':
-        require_once 'pages/saldo_cuti/index.php';
+    case 'adminRole_saldo_cuti':
+        require_once 'pages/adminRole_saldo_cuti/index.php';
         break;
     default:
         echo '<h1>404 - Page Not Found</h1>';
