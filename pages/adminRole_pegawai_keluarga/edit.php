@@ -1,66 +1,37 @@
 <?php
 // Check permission
-if (!hasRole(['admin', 'dosen', 'tendik'])) {
+if (!hasRole(['admin'])) {
     require_once __DIR__ . '/../errors/403.php';
     exit;
 }
+
+// Get all employees for admin to select from
+$pegawai_sql = "SELECT * FROM pegawai ORDER BY nama_lengkap ASC";
+$pegawai_stmt = $pdo->prepare($pegawai_sql);
+$pegawai_stmt->execute();
+$pegawai_list = $pegawai_stmt->fetchAll();
 
 // Get current logged in user ID
 $current_user_id = $_SESSION['user_id'];
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// For dosen and tendik roles, only allow editing their own family data
-if (hasRole(['dosen', 'tendik'])) {
-    // Get user info first
-    $user_info_sql = "SELECT * FROM users WHERE id = :user_id";
-    $user_stmt = $pdo->prepare($user_info_sql);
-    $user_stmt->bindValue(':user_id', $current_user_id);
-    $user_stmt->execute();
-    $user_info = $user_stmt->fetch();
-
-    // Get pegawai info based on user's email
-    $pegawai_sql = "SELECT * FROM pegawai WHERE email = :email";
-    $pegawai_stmt = $pdo->prepare($pegawai_sql);
-    $pegawai_stmt->bindValue(':email', $user_info['email']);
-    $pegawai_stmt->execute();
-    $pegawai = $pegawai_stmt->fetch();
-
-    if (!$pegawai) {
-        // If no pegawai record found, show error
-        require_once __DIR__ . '/../errors/404.php';
-        exit;
-    }
-
-    // Get family data for this pegawai
-    $sql = "SELECT * FROM pegawai_keluarga WHERE id = :id AND pegawai_id = :pegawai_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':id', $id);
-    $stmt->bindValue(':pegawai_id', $pegawai['id']);
-    $stmt->execute();
-    $keluarga = $stmt->fetch();
-
-    if (!$keluarga) {
-        require_once __DIR__ . '/../errors/404.php';
-        exit;
-    }
-} else {
     // For admin role, get any family data
     $sql = "SELECT * FROM pegawai_keluarga WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id);
     $stmt->execute();
     $keluarga = $stmt->fetch();
-    
+
     if (!$keluarga) {
         require_once __DIR__ . '/../errors/404.php';
         exit;
     }
-}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate inputs
+    $pegawai_id = cleanInput($_POST['pegawai_id']);
     $nama_lengkap = cleanInput($_POST['nama_lengkap']);
     $hubungan = cleanInput($_POST['hubungan']);
     $nomor_induk = cleanInput($_POST['nomor_induk']);
@@ -77,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validation
     $errors = [];
 
+    if (empty($pegawai_id)) {
+        $errors['pegawai_id'] = 'Pegawai wajib dipilih';
+    }
+
     if (empty($nama_lengkap)) {
         $errors['nama_lengkap'] = 'Nama lengkap wajib diisi';
     }
@@ -92,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkSql = "SELECT id FROM pegawai_keluarga WHERE nik = :nik AND pegawai_id = :pegawai_id AND id != :id";
         $checkStmt = $pdo->prepare($checkSql);
         $checkStmt->bindValue(':nik', $nik);
-        $checkStmt->bindValue(':pegawai_id', $pegawai['id']);
+        $checkStmt->bindValue(':pegawai_id', $pegawai_id);
         $checkStmt->bindValue(':id', $id);
         $checkStmt->execute();
         if ($checkStmt->rowCount() > 0) {
@@ -136,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Generate unique filename
             $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-            $filename = uniqid() . '_' . $pegawai['id'] . '_' . $nik . '.' . $extension;
+            $filename = uniqid() . '_' . $pegawai_id . '_' . $nik . '.' . $extension;
             $uploadPath = $uploadDir . $filename;
 
             if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadPath)) {
@@ -144,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($keluarga['foto'] && file_exists($uploadDir . $keluarga['foto'])) {
                     unlink($uploadDir . $keluarga['foto']);
                 }
-                
+
                 $foto = $filename;
             } else {
                 $errors['foto'] = 'Gagal mengunggah file.';
@@ -156,6 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             $sql = "UPDATE pegawai_keluarga SET
+                       pegawai_id = :pegawai_id,
                        nama_lengkap = :nama_lengkap,
                        hubungan = :hubungan,
                        nomor_induk = :nomor_induk,
@@ -173,6 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    WHERE id = :id";
 
             $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':pegawai_id', $pegawai_id);
             $stmt->bindValue(':nama_lengkap', $nama_lengkap);
             $stmt->bindValue(':hubungan', $hubungan);
             $stmt->bindValue(':nomor_induk', $nomor_induk);
@@ -212,8 +189,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php echo $errors['general']; ?>
         </div>
     <?php endif; ?>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Pegawai *</label>
+            <select name="pegawai_id"
+                    class="w-full px-4 py-2 border <?php echo isset($errors['pegawai_id']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                <option value="">Pilih pegawai</option>
+                <?php foreach ($pegawai_list as $pegawai_item): ?>
+                    <option value="<?php echo $pegawai_item['id']; ?>" <?php echo (($_POST['pegawai_id'] ?? $keluarga['pegawai_id']) == $pegawai_item['id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($pegawai_item['nama_lengkap']); ?> (<?php echo htmlspecialchars($pegawai_item['email']); ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (isset($errors['pegawai_id'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['pegawai_id']; ?></p>
+            <?php endif; ?>
+        </div>
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
             <input type="text" name="nama_lengkap" value="<?php echo htmlspecialchars($_POST['nama_lengkap'] ?? $keluarga['nama_lengkap']); ?>"

@@ -117,7 +117,7 @@ require_once 'includes/db_connect.php';
 require_once 'includes/functions.php';
 
 $page = isset($_GET['page']) ? cleanInput($_GET['page']) : 'dashboard';
-$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'adminRole_roles', 'adminRole_pegawai', 'adminRole_dosen', 'adminRole_tim_mengajar', 'fakultas', 'adminRole_fakultas', 'adminRole_prodi', 'adminRole_tendik', 'adminRole_unit_kerja', 'adminRole_pegawai_riwayat', 'adminRole_pegawai_keluarga', 'adminRole_pegawai_pendidikan', 'adminRole_pegawai_pendidikan_berkas', 'adminRole_jenis_izin', 'adminRole_izin_pegawai', 'adminRole_master_cuti', 'adminRole_saldo_cuti', 'dosenRole_pegawai', 'dosenRole_mengajar', 'login', 'logout'];
+$allowedPages = ['dashboard', 'profile', 'users', 'settings', 'games', 'roles', 'adminRole_roles', 'adminRole_pegawai', 'adminRole_dosen', 'adminRole_tim_mengajar', 'fakultas', 'adminRole_fakultas', 'adminRole_prodi', 'adminRole_tendik', 'adminRole_unit_kerja', 'adminRole_pegawai_riwayat', 'adminRole_pegawai_keluarga', 'adminRole_pegawai_pendidikan', 'adminRole_pegawai_pendidikan_berkas', 'adminRole_jenis_izin', 'adminRole_izin_pegawai', 'adminRole_master_cuti', 'adminRole_saldo_cuti', 'dosenRole_pegawai', 'dosenRole_mengajar', 'dosenRole_keluarga', 'login', 'logout'];
 $publicPages   = ['login','404']; // Halaman yang tidak butuh login
 
 // Validasi halaman
@@ -199,6 +199,9 @@ switch ($page) {
         break;
     case 'adminRole_pegawai_keluarga':
         require_once 'pages/adminRole_pegawai_keluarga/index.php';
+        break;
+    case 'dosenRole_keluarga':
+        require_once 'pages/dosenRole_keluarga/index.php';
         break;
     case 'adminRole_pegawai_pendidikan_berkas':
         require_once 'pages/adminRole_pegawai_pendidikan_berkas/index.php';

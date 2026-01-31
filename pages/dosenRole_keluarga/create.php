@@ -1,59 +1,70 @@
 <?php
 // Check permission
-if (!hasRole(['admin'])) {
+if (!hasRole(['dosen'])) {
     require_once __DIR__ . '/../errors/403.php';
     exit;
 }
 
-// Get all employees for admin to select from
-$pegawai_sql = "SELECT * FROM pegawai ORDER BY nama_lengkap ASC";
+// Get current logged in user ID
+$current_user_id = $_SESSION['user_id'];
+
+// Get user info first
+$user_info_sql = "SELECT * FROM users WHERE id = :user_id";
+$user_stmt = $pdo->prepare($user_info_sql);
+$user_stmt->bindValue(':user_id', $current_user_id);
+$user_stmt->execute();
+$user_info = $user_stmt->fetch();
+
+// Get pegawai info based on user's email
+$pegawai_sql = "SELECT * FROM pegawai WHERE email = :email";
 $pegawai_stmt = $pdo->prepare($pegawai_sql);
+$pegawai_stmt->bindValue(':email', $user_info['email']);
 $pegawai_stmt->execute();
-$pegawai_list = $pegawai_stmt->fetchAll();
+$pegawai = $pegawai_stmt->fetch();
+
+if (!$pegawai) {
+    // If no pegawai record found, show error
+    require_once __DIR__ . '/../errors/404.php';
+    exit;
+}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate inputs
-    $pegawai_id = cleanInput($_POST['pegawai_id']);
-    $nama_lengkap = cleanInput($_POST['nama_lengkap']);
+    $nama = cleanInput($_POST['nama']);
     $hubungan = cleanInput($_POST['hubungan']);
-    $nomor_induk = cleanInput($_POST['nomor_induk']);
-    $nik = cleanInput($_POST['nik']);
+    $no_ktp = cleanInput($_POST['no_ktp']);
     $jenis_kelamin = cleanInput($_POST['jenis_kelamin']);
     $tempat_lahir = cleanInput($_POST['tempat_lahir']);
     $tanggal_lahir = cleanInput($_POST['tanggal_lahir']);
     $status_hidup = cleanInput($_POST['status_hidup']);
     $pekerjaan = cleanInput($_POST['pekerjaan']);
     $pendidikan_terakhir = cleanInput($_POST['pendidikan_terakhir']);
-    $tanggal_nikah = cleanInput($_POST['tanggal_nikah']);
-    $status_bpjs = isset($_POST['status_bpjs']) ? 1 : 0;
+    $status_tanggungan = isset($_POST['status_tanggungan']) ? 1 : 0;
+    $no_kk = cleanInput($_POST['no_kk']);
 
     // Validation
     $errors = [];
 
-    if (empty($pegawai_id)) {
-        $errors['pegawai_id'] = 'Pegawai wajib dipilih';
-    }
-
-    if (empty($nama_lengkap)) {
-        $errors['nama_lengkap'] = 'Nama lengkap wajib diisi';
+    if (empty($nama)) {
+        $errors['nama'] = 'Nama lengkap wajib diisi';
     }
 
     if (empty($hubungan)) {
         $errors['hubungan'] = 'Hubungan keluarga wajib dipilih';
     }
 
-    if (empty($nik)) {
-        $errors['nik'] = 'NIK wajib diisi';
+    if (empty($no_ktp)) {
+        $errors['no_ktp'] = 'NIK wajib diisi';
     } else {
         // Check if NIK already exists for another family member
-        $checkSql = "SELECT id FROM pegawai_keluarga WHERE nik = :nik AND pegawai_id = :pegawai_id";
+        $checkSql = "SELECT id FROM pegawai_keluarga WHERE no_ktp = :no_ktp AND pegawai_id = :pegawai_id";
         $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->bindValue(':nik', $nik);
-        $checkStmt->bindValue(':pegawai_id', $pegawai_id);
+        $checkStmt->bindValue(':no_ktp', $no_ktp);
+        $checkStmt->bindValue(':pegawai_id', $pegawai['id']);
         $checkStmt->execute();
         if ($checkStmt->rowCount() > 0) {
-            $errors['nik'] = 'NIK sudah digunakan untuk anggota keluarga lain';
+            $errors['no_ktp'] = 'NIK sudah digunakan untuk anggota keluarga lain';
         }
     }
 
@@ -73,87 +84,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['status_hidup'] = 'Status hidup wajib dipilih';
     }
 
-    // Handle file upload if exists
-    $foto = null;
-
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = __DIR__ . '/../../assets/uploads/pegawai_keluarga/';
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
-
-        if ($_FILES['foto']['size'] > $maxSize) {
-            $errors['foto'] = 'Ukuran file terlalu besar. Maksimal 5MB.';
-        } elseif (!in_array($_FILES['foto']['type'], $allowedTypes)) {
-            $errors['foto'] = 'Format file tidak didukung. Hanya JPEG, PNG, dan GIF yang diperbolehkan.';
-        } else {
-            // Create directory if it doesn't exist
-            if (!file_exists($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            // Generate unique filename
-            $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-            $filename = uniqid() . '_' . $pegawai_id . '_' . $nik . '.' . $extension;
-            $uploadPath = $uploadDir . $filename;
-
-            if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadPath)) {
-                $foto = $filename;
-            } else {
-                $errors['foto'] = 'Gagal mengunggah file.';
-            }
-        }
-    }
 
     // If no errors, insert the data
     if (empty($errors)) {
         try {
             $sql = "INSERT INTO pegawai_keluarga (
-                       pegawai_id, nama_lengkap, hubungan, nomor_induk,
-                       nik, jenis_kelamin, tempat_lahir, tanggal_lahir,
+                       pegawai_id, nama, hubungan,
+                       no_ktp, jenis_kelamin, tempat_lahir, tanggal_lahir,
                        status_hidup, pekerjaan, pendidikan_terakhir,
-                       tanggal_nikah, status_bpjs, foto, created_at
+                       status_tanggungan, no_kk, created_at
                    ) VALUES (
-                       :pegawai_id, :nama_lengkap, :hubungan, :nomor_induk,
-                       :nik, :jenis_kelamin, :tempat_lahir, :tanggal_lahir,
+                       :pegawai_id, :nama, :hubungan,
+                       :no_ktp, :jenis_kelamin, :tempat_lahir, :tanggal_lahir,
                        :status_hidup, :pekerjaan, :pendidikan_terakhir,
-                       :tanggal_nikah, :status_bpjs, :foto, NOW()
+                       :status_tanggungan, :no_kk, NOW()
                    )";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':pegawai_id', $pegawai_id);
-            $stmt->bindValue(':nama_lengkap', $nama_lengkap);
+            $stmt->bindValue(':pegawai_id', $pegawai['id']);
+            $stmt->bindValue(':nama', $nama);
             $stmt->bindValue(':hubungan', $hubungan);
-            $stmt->bindValue(':nomor_induk', $nomor_induk);
-            $stmt->bindValue(':nik', $nik);
+            $stmt->bindValue(':no_ktp', $no_ktp);
             $stmt->bindValue(':jenis_kelamin', $jenis_kelamin);
             $stmt->bindValue(':tempat_lahir', $tempat_lahir);
             $stmt->bindValue(':tanggal_lahir', $tanggal_lahir);
             $stmt->bindValue(':status_hidup', $status_hidup);
             $stmt->bindValue(':pekerjaan', $pekerjaan);
             $stmt->bindValue(':pendidikan_terakhir', $pendidikan_terakhir);
-            $stmt->bindValue(':tanggal_nikah', $tanggal_nikah);
-            $stmt->bindValue(':status_bpjs', $status_bpjs);
-            $stmt->bindValue(':foto', $foto);
+            $stmt->bindValue(':status_tanggungan', $status_tanggungan);
+            $stmt->bindValue(':no_kk', $no_kk);
 
             if ($stmt->execute()) {
-                header("Location: index.php?page=pegawai_keluarga&success=Data keluarga berhasil ditambahkan");
+                header("Location: index.php?page=dosenRole_keluarga&success=Data keluarga berhasil ditambahkan");
                 exit;
             } else {
-                $errors['general'] = 'Terjadi kesalahan saat menyimpan data';
+                $errors['general'] = 'Terjadi kesalahan saat menyimpan data: ' . implode(', ', $stmt->errorInfo());
             }
-        } catch (Exception $e) {
-            $errors['general'] = 'Terjadi kesalahan saat menyimpan data';
+        } catch (PDOException $e) {
+            $errors['general'] = 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage();
         }
     }
 }
 ?>
 
 <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Tambah Keluarga Pegawai</h1>
-    <p class="text-gray-500 mt-1">Tambahkan data anggota keluarga</p>
+    <h1 class="text-3xl font-bold text-gray-800">Tambah Keluarga Saya</h1>
+    <p class="text-gray-500 mt-1">Tambahkan data anggota keluarga Anda</p>
 </div>
 
-<form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm p-6">
+<form method="POST" class="bg-white rounded-2xl shadow-sm p-6">
     <?php if (isset($errors['general'])): ?>
         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
             <?php echo $errors['general']; ?>
@@ -162,31 +141,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pegawai *</label>
-            <select name="pegawai_id"
-                    class="w-full px-4 py-2 border <?php echo isset($errors['pegawai_id']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
-                <option value="">Pilih pegawai</option>
-                <?php foreach ($pegawai_list as $pegawai_item): ?>
-                    <option value="<?php echo $pegawai_item['id']; ?>" <?php echo (($_POST['pegawai_id'] ?? '') == $pegawai_item['id']) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($pegawai_item['nama_lengkap']); ?> (<?php echo htmlspecialchars($pegawai_item['email']); ?>)
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <?php if (isset($errors['pegawai_id'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['pegawai_id']; ?></p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+            <input type="text" name="nama" value="<?php echo htmlspecialchars($_POST['nama'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['nama']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                   placeholder="Masukkan nama lengkap">
+            <?php if (isset($errors['nama'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nama']; ?></p>
             <?php endif; ?>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
-            <input type="text" name="nama_lengkap" value="<?php echo htmlspecialchars($_POST['nama_lengkap'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nama_lengkap']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                   placeholder="Masukkan nama lengkap">
-            <?php if (isset($errors['nama_lengkap'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nama_lengkap']; ?></p>
-            <?php endif; ?>
-        </div>
-        
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Hubungan *</label>
             <select name="hubungan"
@@ -203,27 +166,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['hubungan']; ?></p>
             <?php endif; ?>
         </div>
-        
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Induk</label>
-            <input type="text" name="nomor_induk" value="<?php echo htmlspecialchars($_POST['nomor_induk'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nomor_induk']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                   placeholder="Masukkan nomor induk">
-            <?php if (isset($errors['nomor_induk'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nomor_induk']; ?></p>
-            <?php endif; ?>
-        </div>
-        
+
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">NIK *</label>
-            <input type="text" name="nik" value="<?php echo htmlspecialchars($_POST['nik'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nik']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            <input type="text" name="no_ktp" value="<?php echo htmlspecialchars($_POST['no_ktp'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['no_ktp']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                    placeholder="Masukkan NIK">
-            <?php if (isset($errors['nik'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nik']; ?></p>
+            <?php if (isset($errors['no_ktp'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['no_ktp']; ?></p>
             <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin *</label>
             <select name="jenis_kelamin"
@@ -236,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['jenis_kelamin']; ?></p>
             <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir *</label>
             <input type="text" name="tempat_lahir" value="<?php echo htmlspecialchars($_POST['tempat_lahir'] ?? ''); ?>"
@@ -246,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['tempat_lahir']; ?></p>
             <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir *</label>
             <input type="date" name="tanggal_lahir" value="<?php echo htmlspecialchars($_POST['tanggal_lahir'] ?? ''); ?>"
@@ -255,12 +209,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['tanggal_lahir']; ?></p>
             <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Status Hidup *</label>
             <select name="status_hidup"
                     class="w-full px-4 py-2 border <?php echo isset($errors['status_hidup']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
-                <option value="">Pilih Status Hidup</option>
+                <option value="">Pilih status hidup</option>
                 <option value="Hidup" <?php echo (($_POST['status_hidup'] ?? '') === 'Hidup') ? 'selected' : ''; ?>>Hidup</option>
                 <option value="Meninggal" <?php echo (($_POST['status_hidup'] ?? '') === 'Meninggal') ? 'selected' : ''; ?>>Meninggal</option>
             </select>
@@ -268,54 +222,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['status_hidup']; ?></p>
             <?php endif; ?>
         </div>
-        
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
-            <input type="file" name="foto" accept="image/*"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
-            <p class="mt-1 text-sm text-gray-500">Format: JPEG, PNG, GIF. Maksimal 5MB.</p>
-            <?php if (isset($errors['foto'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['foto']; ?></p>
-            <?php endif; ?>
-        </div>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan</label>
             <input type="text" name="pekerjaan" value="<?php echo htmlspecialchars($_POST['pekerjaan'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['pekerjaan']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                    placeholder="Masukkan pekerjaan">
+            <?php if (isset($errors['pekerjaan'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['pekerjaan']; ?></p>
+            <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pendidikan Terakhir</label>
-            <input type="text" name="pendidikan_terakhir" value="<?php echo htmlspecialchars($_POST['pendidikan_terakhir'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                   placeholder="Masukkan pendidikan terakhir">
+            <select name="pendidikan_terakhir"
+                    class="w-full px-4 py-2 border <?php echo isset($errors['pendidikan_terakhir']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                <option value="">Pilih pendidikan terakhir</option>
+                <option value="SD" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'SD') ? 'selected' : ''; ?>>SD</option>
+                <option value="SMP" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'SMP') ? 'selected' : ''; ?>>SMP</option>
+                <option value="SMA" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'SMA') ? 'selected' : ''; ?>>SMA</option>
+                <option value="D1" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'D1') ? 'selected' : ''; ?>>D1</option>
+                <option value="D2" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'D2') ? 'selected' : ''; ?>>D2</option>
+                <option value="D3" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'D3') ? 'selected' : ''; ?>>D3</option>
+                <option value="D4/S1" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'D4/S1') ? 'selected' : ''; ?>>D4/S1</option>
+                <option value="S2" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'S2') ? 'selected' : ''; ?>>S2</option>
+                <option value="S3" <?php echo (($_POST['pendidikan_terakhir'] ?? '') === 'S3') ? 'selected' : ''; ?>>S3</option>
+            </select>
+            <?php if (isset($errors['pendidikan_terakhir'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['pendidikan_terakhir']; ?></p>
+            <?php endif; ?>
         </div>
-        
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Nikah</label>
             <input type="date" name="tanggal_nikah" value="<?php echo htmlspecialchars($_POST['tanggal_nikah'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                   class="w-full px-4 py-2 border <?php echo isset($errors['tanggal_nikah']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+            <?php if (isset($errors['tanggal_nikah'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['tanggal_nikah']; ?></p>
+            <?php endif; ?>
         </div>
-        
-        <div class="flex items-center pt-6">
-            <input type="checkbox" name="status_bpjs" id="status_bpjs" value="1"
-                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="status_bpjs" class="ml-2 block text-sm text-gray-700">
-                Status BPJS Aktif
-            </label>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-2">No KK</label>
+            <input type="text" name="no_kk" value="<?php echo htmlspecialchars($_POST['no_kk'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['no_kk']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                   placeholder="Masukkan nomor kartu keluarga">
+            <?php if (isset($errors['no_kk'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['no_kk']; ?></p>
+            <?php endif; ?>
         </div>
+
+        <div class="md:col-span-2">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="status_tanggungan" name="status_tanggungan" type="checkbox" <?php echo (isset($_POST['status_tanggungan']) || !empty($_POST)) ? 'checked' : ''; ?>
+                           class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="status_tanggungan" class="font-medium text-gray-700">Status Tanggungan</label>
+                    <p class="text-gray-500">Centang jika anggota keluarga ini menjadi tanggungan</p>
+                </div>
+            </div>
+        </div>
+
     </div>
-    
+
     <div class="flex justify-end space-x-3">
-        <a href="index.php?page=pegawai_keluarga" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+        <a href="index.php?page=dosenRole_keluarga" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors">
             Batal
         </a>
         <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors">
-            Simpan Keluarga
+            Simpan Data
         </button>
     </div>
 </form>
