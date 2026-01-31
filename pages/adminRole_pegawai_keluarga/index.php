@@ -151,7 +151,7 @@ switch ($action) {
     </div>
     <?php if (hasRole(['admin'])): ?>
     <?php
-    $createUrl = "index.php?page=pegawai_keluarga&action=create";
+    $createUrl = "index.php?page=adminRole_pegawai_keluarga&action=create";
     if ($pegawaiIdFromSearch) {
         $createUrl .= "&pegawai_id=" . $pegawaiIdFromSearch;
     }
@@ -168,7 +168,7 @@ switch ($action) {
 <!-- Search & Filter for Admin -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
     <form method="GET" class="flex flex-col md:flex-row gap-3">
-        <input type="hidden" name="page" value="pegawai_keluarga">
+        <input type="hidden" name="page" value="adminRole_pegawai_keluarga">
         <div class="flex-1">
             <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>"
                    placeholder="Cari nama pegawai atau keluarga..."
@@ -194,7 +194,7 @@ switch ($action) {
             Filter
         </button>
         <?php if ($search || $statusFilter || $jenisFilter || $pegawaiIdParam): ?>
-        <a href="index.php?page=pegawai_keluarga" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-2 rounded-xl transition-colors inline-flex items-center">
+        <a href="index.php?page=adminRole_pegawai_keluarga" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-2 rounded-xl transition-colors inline-flex items-center">
             Reset
         </a>
         <?php endif; ?>
@@ -202,14 +202,77 @@ switch ($action) {
 </div>
 
 <!-- Family Card View for Admin -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 gap-6">
     <?php if (count($keluarga) > 0): ?>
         <?php foreach ($keluarga as $k): ?>
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
                 <!-- Family Member Content -->
+                <?php if (isset($k['foto']) && $k['foto']): ?>
+                <div>
+                    <img src="../../assets/uploads/pegawai_keluarga/<?php echo htmlspecialchars($k['foto']); ?>"
+                         class="w-full h-48 object-cover border-b border-gray-200"
+                         alt="Foto Keluarga">
+                    <div class="p-5">
+                        <div class="mb-3">
+                            <h3 class="text-lg font-bold text-gray-800"><?php echo htmlspecialchars($k['nama'] ?? '-'); ?></h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                <?php
+                                $hubungan = $k['hubungan'] ?? '';
+                                echo htmlspecialchars($hubungan === 'Suami' ? 'Suami' : ($hubungan === 'Istri' ? 'Istri' : ucfirst(str_replace('_', ' ', $hubungan ?? ''))));
+                                ?>
+                            </p>
+                        </div>
+
+                        <!-- Get employee name -->
+                        <?php
+                        $pegawaiStmt = $pdo->prepare("SELECT nama_lengkap FROM pegawai WHERE id = ?");
+                        $pegawaiStmt->execute([$k['pegawai_id']]);
+                        $pegawai = $pegawaiStmt->fetch();
+                        $pegawai_nama = $pegawai ? $pegawai['nama_lengkap'] : 'Pegawai Tidak Ditemukan';
+                        ?>
+
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between">
+                                <p class="text-sm text-gray-500">Nama Pegawai</p>
+                                <p class="font-medium"><?php echo htmlspecialchars($pegawai_nama); ?></p>
+                            </div>
+                            <div class="flex justify-between">
+                                <p class="text-sm text-gray-500">Jenis Kelamin</p>
+                                <p class="font-medium"><?php echo htmlspecialchars(($k['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan'); ?></p>
+                            </div>
+                            <div class="flex justify-between">
+                                <p class="text-sm text-gray-500">Tempat Lahir</p>
+                                <p class="font-medium"><?php echo htmlspecialchars($k['tempat_lahir'] ?? '-'); ?></p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-500">
+                                <?php echo htmlspecialchars($k['tanggal_lahir'] ? date('d M Y', strtotime($k['tanggal_lahir'])) : '-'); ?>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <a href="index.php?page=adminRole_pegawai_keluarga&action=detail&id=<?php echo $k['id']; ?>"
+                                   class="text-green-600 hover:text-green-800 transition-colors" title="Detail">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </a>
+                                <a href="index.php?page=adminRole_pegawai_keluarga&action=edit&id=<?php echo $k['id']; ?>"
+                                   class="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php else: ?>
                 <div class="p-5">
                     <div class="mb-3">
-                        <h3 class="text-lg font-bold text-gray-800"><?php echo htmlspecialchars($k['nama_lengkap'] ?? '-'); ?></h3>
+                        <h3 class="text-lg font-bold text-gray-800"><?php echo htmlspecialchars($k['nama'] ?? '-'); ?></h3>
                         <p class="text-sm text-gray-500 mt-1">
                             <?php
                             $hubungan = $k['hubungan'] ?? '';
@@ -218,21 +281,25 @@ switch ($action) {
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div>
-                            <p class="text-xs text-gray-500">Nomor Induk</p>
-                            <p class="font-medium"><?php echo htmlspecialchars($k['nomor_induk'] ?? '-'); ?></p>
+                    <!-- Get employee name -->
+                    <?php
+                    $pegawaiStmt = $pdo->prepare("SELECT nama_lengkap FROM pegawai WHERE id = ?");
+                    $pegawaiStmt->execute([$k['pegawai_id']]);
+                    $pegawai = $pegawaiStmt->fetch();
+                    $pegawai_nama = $pegawai ? $pegawai['nama_lengkap'] : 'Pegawai Tidak Ditemukan';
+                    ?>
+
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between">
+                            <p class="text-sm text-gray-500">Nama Pegawai</p>
+                            <p class="font-medium"><?php echo htmlspecialchars($pegawai_nama); ?></p>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-500">NIK</p>
-                            <p class="font-medium"><?php echo htmlspecialchars($k['nik'] ?? '-'); ?></p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Jenis Kelamin</p>
+                        <div class="flex justify-between">
+                            <p class="text-sm text-gray-500">Jenis Kelamin</p>
                             <p class="font-medium"><?php echo htmlspecialchars(($k['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan'); ?></p>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Tempat Lahir</p>
+                        <div class="flex justify-between">
+                            <p class="text-sm text-gray-500">Tempat Lahir</p>
                             <p class="font-medium"><?php echo htmlspecialchars($k['tempat_lahir'] ?? '-'); ?></p>
                         </div>
                     </div>
@@ -243,14 +310,14 @@ switch ($action) {
                         </div>
 
                         <div class="flex space-x-2">
-                            <a href="index.php?page=pegawai_keluarga&action=detail&id=<?php echo $k['id']; ?>"
+                            <a href="index.php?page=adminRole_pegawai_keluarga&action=detail&id=<?php echo $k['id']; ?>"
                                class="text-green-600 hover:text-green-800 transition-colors" title="Detail">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
                             </a>
-                            <a href="index.php?page=pegawai_keluarga&action=edit&id=<?php echo $k['id']; ?>"
+                            <a href="index.php?page=adminRole_pegawai_keluarga&action=edit&id=<?php echo $k['id']; ?>"
                                class="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -259,6 +326,7 @@ switch ($action) {
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     <?php else: ?>

@@ -60,16 +60,6 @@
                 </a>
                 <?php endif; ?>
 
-                <!-- Saldo Cuti (Admin only) -->
-                <?php if (hasRole(['admin'])): ?>
-                <a href="index.php?page=adminRole_saldo_cuti" class="sidebar-item <?php echo $currentPage === 'adminRole_saldo_cuti' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
-                    <svg class="w-5 h-5 <?php echo $currentPage === 'adminRole_saldo_cuti' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="font-medium text-gray-700">Saldo Cuti</span>
-                </a>
-                <?php endif; ?>
-
             <h3 class="text-xs font-semibold text-gray-400 uppercase px-4 pt-1 pb-1">Data Pegawai</h3>
 
                 <!-- Data Pegawai (Admin & Dosen) -->
@@ -80,7 +70,7 @@
                     </svg>
                     <span class="font-medium text-gray-700">Data Pegawai</span>
                 </a>
-                <?php endif; ?>
+                <?php endif; ?>                
 
                 <!-- Tim Pengajar (Dosen only) -->
                 <?php if (hasRole(['dosen'])): ?>
@@ -130,6 +120,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     <span class="font-medium text-gray-700">Pegawai</span>
+                </a>
+                <?php endif; ?>
+
+                <!-- Saldo Cuti (Admin only) -->
+                <?php if (hasRole(['admin'])): ?>
+                <a href="index.php?page=adminRole_saldo_cuti" class="sidebar-item <?php echo $currentPage === 'adminRole_saldo_cuti' ? 'active' : ''; ?> flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all">
+                    <svg class="w-5 h-5 <?php echo $currentPage === 'adminRole_saldo_cuti' ? 'text-blue-600' : 'text-gray-500'; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium text-gray-700">Saldo Cuti</span>
                 </a>
                 <?php endif; ?>
 

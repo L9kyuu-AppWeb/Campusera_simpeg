@@ -357,38 +357,6 @@ ALTER TABLE dosen_prodi ADD CONSTRAINT fk_dosen_prodi_dosen_id FOREIGN KEY (dose
 ALTER TABLE dosen_prodi ADD CONSTRAINT fk_dosen_prodi_prodi_id FOREIGN KEY (prodi_id) REFERENCES prodi(id);
 
 -- ==========================================
--- Insert default data
--- ==========================================
-
--- Insert default roles
-INSERT INTO roles (role_name, description) VALUES
-('admin', 'Full system access with all permissions'),
-('dosen', 'Management level access with limited permissions'),
-('tendik', 'Basic staff access for daily operations')
-ON DUPLICATE KEY UPDATE description = VALUES(description);
-
--- Insert default admin user
--- Username: admin
--- Password: admin123
-INSERT INTO users (username, email, password, first_name, last_name, role_id, is_active) VALUES
-('admin', 'admin@example.com', '$2y$10$vuT0T56.1nqR1mzWBGKKH.lILeAA7EvUjyBTnBmaCVwuixoZgfKqy', 'Admin', 'User', 1, 1)
-ON DUPLICATE KEY UPDATE username = VALUES(username);
-
--- Insert sample activity logs
-INSERT INTO activity_logs (user_id, activity_type, description, ip_address) VALUES
-(1, 'login', 'User logged in', '127.0.0.1')
-ON DUPLICATE KEY UPDATE activity_type = VALUES(activity_type);
-
--- Insert sample games for testing
-INSERT INTO games (title, description, genre, release_date, platform, price, image, is_active) VALUES
-('Super Mario Odyssey', 'An action-adventure platform game featuring Mario and Cappy', 'Platform', '2017-10-27', 'Nintendo Switch', 59.99, 'mario-odyssey.jpg', 1),
-('The Legend of Zelda: Breath of the Wild', 'Open-world action-adventure game in the Zelda series', 'Adventure', '2017-03-03', 'Nintendo Switch', 69.99, 'zelda-botw.jpg', 1),
-('Cyberpunk 2077', 'Action role-playing video game set in Night City', 'RPG', '2020-12-10', 'PC, PS4, PS5, Xbox One, Xbox Series X/S', 59.99, 'cyberpunk2077.jpg', 1),
-('The Last of Us Part II', 'Post-apocalyptic survival horror game', 'Action', '2020-06-19', 'PlayStation 4', 49.99, 'last-of-us-part2.jpg', 1),
-('Red Dead Redemption 2', 'Western action-adventure game set in 1899', 'Action', '2018-10-26', 'PC, PS4, Xbox One', 59.99, 'red-dead-redemption2.jpg', 1)
-ON DUPLICATE KEY UPDATE title = VALUES(title);
-
--- ==========================================
 -- Add unique constraints after table creation
 -- ==========================================
 

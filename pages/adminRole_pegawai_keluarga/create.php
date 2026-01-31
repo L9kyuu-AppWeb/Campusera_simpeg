@@ -15,18 +15,17 @@ $pegawai_list = $pegawai_stmt->fetchAll();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate inputs
     $pegawai_id = cleanInput($_POST['pegawai_id']);
-    $nama_lengkap = cleanInput($_POST['nama_lengkap']);
+    $nama = cleanInput($_POST['nama']);
     $hubungan = cleanInput($_POST['hubungan']);
-    $nomor_induk = cleanInput($_POST['nomor_induk']);
-    $nik = cleanInput($_POST['nik']);
+    $no_ktp = cleanInput($_POST['no_ktp']);
+    $no_kk = cleanInput($_POST['no_kk']);
     $jenis_kelamin = cleanInput($_POST['jenis_kelamin']);
     $tempat_lahir = cleanInput($_POST['tempat_lahir']);
     $tanggal_lahir = cleanInput($_POST['tanggal_lahir']);
     $status_hidup = cleanInput($_POST['status_hidup']);
     $pekerjaan = cleanInput($_POST['pekerjaan']);
     $pendidikan_terakhir = cleanInput($_POST['pendidikan_terakhir']);
-    $tanggal_nikah = cleanInput($_POST['tanggal_nikah']);
-    $status_bpjs = isset($_POST['status_bpjs']) ? 1 : 0;
+    $status_tanggungan = isset($_POST['status_tanggungan']) ? 1 : 0;
 
     // Validation
     $errors = [];
@@ -35,25 +34,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['pegawai_id'] = 'Pegawai wajib dipilih';
     }
 
-    if (empty($nama_lengkap)) {
-        $errors['nama_lengkap'] = 'Nama lengkap wajib diisi';
+    if (empty($nama)) {
+        $errors['nama'] = 'Nama lengkap wajib diisi';
     }
 
     if (empty($hubungan)) {
         $errors['hubungan'] = 'Hubungan keluarga wajib dipilih';
     }
 
-    if (empty($nik)) {
-        $errors['nik'] = 'NIK wajib diisi';
+    if (empty($no_kk)) {
+        $errors['no_kk'] = 'No. KK wajib diisi';
     } else {
-        // Check if NIK already exists for another family member
-        $checkSql = "SELECT id FROM pegawai_keluarga WHERE nik = :nik AND pegawai_id = :pegawai_id";
+        // Check if No. KK already exists for another family member
+        $checkSql = "SELECT id FROM pegawai_keluarga WHERE no_kk = :no_kk AND pegawai_id = :pegawai_id";
         $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->bindValue(':nik', $nik);
+        $checkStmt->bindValue(':no_kk', $no_kk);
         $checkStmt->bindValue(':pegawai_id', $pegawai_id);
         $checkStmt->execute();
         if ($checkStmt->rowCount() > 0) {
-            $errors['nik'] = 'NIK sudah digunakan untuk anggota keluarga lain';
+            $errors['no_kk'] = 'No. KK sudah digunakan untuk anggota keluarga lain';
         }
     }
 
@@ -93,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Generate unique filename
             $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-            $filename = uniqid() . '_' . $pegawai_id . '_' . $nik . '.' . $extension;
+            $filename = uniqid() . '_' . $pegawai_id . '_' . $no_kk . '.' . $extension;
             $uploadPath = $uploadDir . $filename;
 
             if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadPath)) {
@@ -108,35 +107,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             $sql = "INSERT INTO pegawai_keluarga (
-                       pegawai_id, nama_lengkap, hubungan, nomor_induk,
-                       nik, jenis_kelamin, tempat_lahir, tanggal_lahir,
+                       pegawai_id, nama, hubungan, no_ktp,
+                       no_kk, jenis_kelamin, tempat_lahir, tanggal_lahir,
                        status_hidup, pekerjaan, pendidikan_terakhir,
-                       tanggal_nikah, status_bpjs, foto, created_at
+                       status_tanggungan, foto, created_at
                    ) VALUES (
-                       :pegawai_id, :nama_lengkap, :hubungan, :nomor_induk,
-                       :nik, :jenis_kelamin, :tempat_lahir, :tanggal_lahir,
+                       :pegawai_id, :nama, :hubungan, :no_ktp,
+                       :no_kk, :jenis_kelamin, :tempat_lahir, :tanggal_lahir,
                        :status_hidup, :pekerjaan, :pendidikan_terakhir,
-                       :tanggal_nikah, :status_bpjs, :foto, NOW()
+                       :status_tanggungan, :foto, NOW()
                    )";
 
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':pegawai_id', $pegawai_id);
-            $stmt->bindValue(':nama_lengkap', $nama_lengkap);
+            $stmt->bindValue(':nama', $nama);
             $stmt->bindValue(':hubungan', $hubungan);
-            $stmt->bindValue(':nomor_induk', $nomor_induk);
-            $stmt->bindValue(':nik', $nik);
+            $stmt->bindValue(':no_ktp', $no_ktp);
+            $stmt->bindValue(':no_kk', $no_kk);
             $stmt->bindValue(':jenis_kelamin', $jenis_kelamin);
             $stmt->bindValue(':tempat_lahir', $tempat_lahir);
             $stmt->bindValue(':tanggal_lahir', $tanggal_lahir);
             $stmt->bindValue(':status_hidup', $status_hidup);
             $stmt->bindValue(':pekerjaan', $pekerjaan);
             $stmt->bindValue(':pendidikan_terakhir', $pendidikan_terakhir);
-            $stmt->bindValue(':tanggal_nikah', $tanggal_nikah);
-            $stmt->bindValue(':status_bpjs', $status_bpjs);
+            $stmt->bindValue(':status_tanggungan', $status_tanggungan);
             $stmt->bindValue(':foto', $foto);
 
             if ($stmt->execute()) {
-                header("Location: index.php?page=pegawai_keluarga&success=Data keluarga berhasil ditambahkan");
+                header("Location: index.php?page=adminRole_pegawai_keluarga&success=Data keluarga berhasil ditambahkan");
                 exit;
             } else {
                 $errors['general'] = 'Terjadi kesalahan saat menyimpan data';
@@ -179,11 +177,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
-            <input type="text" name="nama_lengkap" value="<?php echo htmlspecialchars($_POST['nama_lengkap'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nama_lengkap']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            <input type="text" name="nama" value="<?php echo htmlspecialchars($_POST['nama'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['nama']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                    placeholder="Masukkan nama lengkap">
-            <?php if (isset($errors['nama_lengkap'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nama_lengkap']; ?></p>
+            <?php if (isset($errors['nama'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nama']; ?></p>
             <?php endif; ?>
         </div>
         
@@ -205,22 +203,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Induk</label>
-            <input type="text" name="nomor_induk" value="<?php echo htmlspecialchars($_POST['nomor_induk'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nomor_induk']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                   placeholder="Masukkan nomor induk">
-            <?php if (isset($errors['nomor_induk'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nomor_induk']; ?></p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">No. KTP</label>
+            <input type="text" name="no_ktp" value="<?php echo htmlspecialchars($_POST['no_ktp'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['no_ktp']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                   placeholder="Masukkan No. KTP">
+            <?php if (isset($errors['no_ktp'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['no_ktp']; ?></p>
             <?php endif; ?>
         </div>
-        
+
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">NIK *</label>
-            <input type="text" name="nik" value="<?php echo htmlspecialchars($_POST['nik'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border <?php echo isset($errors['nik']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                   placeholder="Masukkan NIK">
-            <?php if (isset($errors['nik'])): ?>
-                <p class="mt-1 text-sm text-red-600"><?php echo $errors['nik']; ?></p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">No. KK *</label>
+            <input type="text" name="no_kk" value="<?php echo htmlspecialchars($_POST['no_kk'] ?? ''); ?>"
+                   class="w-full px-4 py-2 border <?php echo isset($errors['no_kk']) ? 'border-red-500' : 'border-gray-200'; ?> rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                   placeholder="Masukkan No. KK">
+            <?php if (isset($errors['no_kk'])): ?>
+                <p class="mt-1 text-sm text-red-600"><?php echo $errors['no_kk']; ?></p>
             <?php endif; ?>
         </div>
         
@@ -268,7 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mt-1 text-sm text-red-600"><?php echo $errors['status_hidup']; ?></p>
             <?php endif; ?>
         </div>
-        
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
             <input type="file" name="foto" accept="image/*"
@@ -279,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
         </div>
     </div>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan</label>
@@ -295,17 +292,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    placeholder="Masukkan pendidikan terakhir">
         </div>
         
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Nikah</label>
-            <input type="date" name="tanggal_nikah" value="<?php echo htmlspecialchars($_POST['tanggal_nikah'] ?? ''); ?>"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
-        </div>
-        
         <div class="flex items-center pt-6">
-            <input type="checkbox" name="status_bpjs" id="status_bpjs" value="1"
+            <input type="checkbox" name="status_tanggungan" id="status_tanggungan" value="1"
                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="status_bpjs" class="ml-2 block text-sm text-gray-700">
-                Status BPJS Aktif
+            <label for="status_tanggungan" class="ml-2 block text-sm text-gray-700">
+                Status Tanggungan
             </label>
         </div>
     </div>

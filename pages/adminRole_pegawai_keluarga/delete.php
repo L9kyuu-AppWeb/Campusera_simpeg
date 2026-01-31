@@ -28,19 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($keluarga['foto']) {
         $uploadDir = __DIR__ . '/../../assets/uploads/pegawai_keluarga/';
         $photoPath = $uploadDir . $keluarga['foto'];
-        
+
         if (file_exists($photoPath)) {
             unlink($photoPath);
         }
     }
-    
+
     // Delete the record
     $deleteSql = "DELETE FROM pegawai_keluarga WHERE id = :id";
     $deleteStmt = $pdo->prepare($deleteSql);
     $deleteStmt->bindValue(':id', $id);
-    
+
     if ($deleteStmt->execute()) {
-        header("Location: index.php?page=pegawai_keluarga&success=Data keluarga berhasil dihapus");
+        header("Location: index.php?page=adminRole_pegawai_keluarga&success=Data keluarga berhasil dihapus");
         exit;
     } else {
         $error = "Terjadi kesalahan saat menghapus data";
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <p class="text-sm text-gray-500">Nama Lengkap</p>
-                <p class="font-medium"><?php echo htmlspecialchars($keluarga['nama_lengkap'] ?? '-'); ?></p>
+                <p class="font-medium"><?php echo htmlspecialchars($keluarga['nama'] ?? '-'); ?></p>
             </div>
 
             <div>
@@ -76,10 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo htmlspecialchars($hubungan === 'Suami' ? 'Suami' : ($hubungan === 'Istri' ? 'Istri' : ucfirst(str_replace('_', ' ', $hubungan ?? ''))));
                 ?></p>
             </div>
-            
+
             <div>
-                <p class="text-sm text-gray-500">NIK</p>
-                <p class="font-medium"><?php echo htmlspecialchars($keluarga['nik'] ?? '-'); ?></p>
+                <p class="text-sm text-gray-500">No. KK</p>
+                <p class="font-medium"><?php echo htmlspecialchars($keluarga['no_kk'] ?? '-'); ?></p>
             </div>
             
             <div>
